@@ -8,3 +8,6 @@ __pycache__/
 
 # API keys stay on this Mac only
 secrets/
+
+# Agent outputs contain addresses from EPC data, keep local
+outputs/
