@@ -85,9 +85,27 @@ table{width:100%;border-collapse:collapse;font-size:12.5px}td,th{padding:6px 4px
 .big2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0}.big2 div b{display:block;font-size:22px;letter-spacing:-.02em;white-space:nowrap}.big2 div span{font-size:11.5px;color:var(--mute)}
 details{margin-top:14px;font-size:12px;line-height:1.5;color:#333}summary{cursor:pointer;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
 .flow{display:grid;grid-template-columns:1fr 14px 1fr 14px 1fr;align-items:stretch;margin:6px 0}.flow div{border:1px solid var(--ink);padding:8px;font-size:11.5px;line-height:1.35}.flow div b{display:block;font-size:12px;margin-bottom:3px}.flow span{align-self:center;text-align:center}
+#hero{position:fixed;inset:0;z-index:20;background:rgba(250,250,248,.97);display:flex;align-items:center;justify-content:center}
+#hero .in{width:min(1100px,92vw)}#hero .k{margin-bottom:10px}#hero h2{font-size:44px;line-height:1.05;letter-spacing:-.025em;max-width:900px}
+#hero h2 span{color:var(--red)}#hero .sub{font-size:17px;color:#444;margin:14px 0 30px;max-width:760px;line-height:1.45}
+.lad{display:grid;grid-template-columns:200px 1fr 170px;gap:10px 18px;align-items:center;margin-bottom:30px}
+.lad .l{font-size:14px;font-weight:700}.lad .l small{display:block;font-weight:400;color:var(--mute);font-size:12px}
+.lad .b{height:34px;background:#e3e1da;position:relative}.lad .b i{position:absolute;inset:0 auto 0 0;display:block}
+.lad .v{font-size:24px;font-weight:700;letter-spacing:-.02em}.lad .v small{display:block;font-size:12px;font-weight:400;color:var(--mute)}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}.trio div{border-top:3px solid var(--ink);padding-top:8px;font-size:13.5px;line-height:1.4}
+.trio b{display:block;font-size:15px;margin-bottom:2px}#hero button.go{background:var(--ink);color:#fff;border:0;font:inherit;font-size:15px;padding:13px 22px;cursor:pointer}
+#strip{position:absolute;top:58px;left:14px;right:454px;z-index:2;display:flex;gap:0;background:#111;color:#fff;font-size:12.5px;cursor:pointer}
+#strip div{padding:8px 14px;border-right:1px solid #333}#strip b{font-size:15px;margin-right:6px}
 p.t{line-height:1.5;margin:6px 0;font-size:12.5px}.note{font-size:10.5px;color:#888;line-height:1.5;margin-top:20px}
 </style></head><body>
 <div id="map"></div>
+<div id="hero"><div class="in"><div class="k">Greenflip prototype · Arlington Road, Camden · built from public data in one evening</div>
+<h2>A £9.8m retrofit wish-list, turned into <span>£376k you can fund tomorrow</span> and a survey list of 70.</h2>
+<div class="sub">Every building on the street is a digital twin showing where it loses heat. Three AI agents then check the data, propose the work and argue about it, so money only goes where the evidence holds.</div>
+<div id="lad" class="lad"></div>
+<div class="trio"><div><b>1 · Sceptic</b>Checks the records. 40 certificates have no address ID; 6 blocks disagree about their own walls.</div><div><b>2 · Strategist</b>Picks the fixes with the fastest payback that make a heat pump viable.</div><div><b>3 · Challenger</b>Attacks the plan and splits it into start now and survey first.</div></div>
+<button class="go" onclick="document.getElementById('hero').remove()">Explore the street in 3D →</button></div></div>
+<div id="strip" onclick="go('agents')"></div>
 <div class="modes" id="modes"></div><div id="scale"></div>
 <aside><div class="top"><div class="brand"><b>Arlington Road · retrofit twin</b><div class="seg" id="client"><button data-c="investor" class="on">Investor</button><button data-c="council">Council</button></div></div>
 <div class="tabs" id="tabs"></div></div><div id="pane"></div></aside>
@@ -140,7 +158,7 @@ function bars(o,cols){const t=Object.values(o).reduce((a,b)=>a+b,0),ks=Object.ke
 // ---------- street ----------
 function street(){const T=D.totals,M=D.meta,m=D.memos[client]||{},inv=client==="investor";
   const lw={};Object.keys(EL).forEach(k=>lw[k]=B.reduce((a,b)=>a+b.loss_w[k],0));
-  const rung=(n,t,sub,w)=>`<div class="rung"><div><b>${n}</b><br><small>${sub}</small></div><div class="n">${inv?gbp(t.capex_gbp)+" → "+gbp(t.bill_saving_gbp_per_year)+"/yr":t.co2_saved_t_per_year+" tCO₂/yr"}<br><small>${inv?t.simple_payback_years+"-year payback · "+t.co2_saved_t_per_year+" tCO₂/yr":gbp(t.capex_gbp)+" · "+gbp(Math.round(t.capex_gbp/Math.max(1,t.co2_saved_t_per_year)/15))+" per tonne over 15 yrs"}</small></div><div class="bar"><i style="width:${w}%"></i></div></div>`;
+  const rung=(n,sub,t,w)=>`<div class="rung"><div><b>${n}</b><br><small>${sub}</small></div><div class="n">${inv?gbp(t.capex_gbp)+" → "+gbp(t.bill_saving_gbp_per_year)+"/yr":t.co2_saved_t_per_year+" tCO₂/yr"}<br><small>${inv?t.simple_payback_years+"-year payback · "+t.co2_saved_t_per_year+" tCO₂/yr":gbp(t.capex_gbp)+" · "+gbp(Math.round(t.capex_gbp/Math.max(1,t.co2_saved_t_per_year)/15))+" per tonne over 15 yrs"}</small></div><div class="bar"><i style="width:${w}%"></i></div></div>`;
   const top=ranked().slice(0,6), mx=T.full_fabric_if_all_confirmed[inv?"capex_gbp":"co2_saved_t_per_year"], w=t=>Math.max(2,100*t[inv?"capex_gbp":"co2_saved_t_per_year"]/mx);
   return `<div class="k">${M.placed} homes · ${B.length} buildings · every one a digital twin built from public data</div>
   <h1>${inv?"Where the first pound should go on this street, and what it returns.":"Which homes to treat first, and what each pound of budget buys."}</h1>
@@ -148,7 +166,7 @@ function street(){const T=D.totals,M=D.meta,m=D.memos[client]||{},inv=client==="
   ${rung("1 · Start now","No-regret measures the agents cleared without a visit",T.approved_now,w(T.approved_now))}
   ${rung("2 · After a targeted survey",T.survey_visits_needed+" buildings, one named question each",T.after_survey,w(T.after_survey))}
   ${rung("3 · Everything, unchecked","What a model without the agents would recommend",T.full_fabric_if_all_confirmed,100)}</div>
-  <div class="memo"><em>Memo written by the agent from these totals</em><b>${esc(m.headline)}</b><ul>${(m.points||[]).map(p=>`<li>${esc(p)}</li>`).join("")}</ul><p style="margin-top:6px"><b style="display:inline;font-size:12.5px">Next step:</b> ${esc(m.ask)}</p></div>
+  <div class="memo"><em>Memo written by the agent from these totals</em><b>${esc(m.headline)}</b><details style="margin-top:4px"><summary>Read the memo</summary><ul>${(m.points||[]).map(p=>`<li>${esc(p)}</li>`).join("")}</ul><p style="margin-top:6px"><b style="display:inline;font-size:12.5px">Next step:</b> ${esc(m.ask)}</p></details></div>
   <h3>Where the street loses heat · ${T.peak_heat_loss_kw.toLocaleString()} kW on a cold day</h3>${stack(lw)}
   <h3>${inv?"Best risk-adjusted returns":"Most carbon per pound"} · click to fly there</h3>
   ${top.map((b,i)=>`<div class="rank" onclick="pick('${b.id}')"><b>${i+1}</b><span>${esc(b.name)} <small>· ${b.homes>1?b.homes+" homes":"house"}${b.social?" · "+b.social+" social rent":""}</small></span><span>${inv?(b.score.investor).toFixed(1)+"% /yr":(b.score.council).toFixed(1)+" t per £100k"}</span></div>`).join("")}
@@ -239,6 +257,11 @@ function go(t){tab=t;if(sel){sel=null;home(900);}render();} function back(){sel=
 function setMode(m){mode=m;render();}
 function pick(id){sel=id;const b=byId[id];map.flyTo({center:b.centroid,zoom:b.footprint>400?18.2:19.3,pitch:60,duration:1100});render();}
 document.querySelectorAll("#client button").forEach(x=>x.onclick=()=>{document.querySelectorAll("#client button").forEach(y=>y.classList.remove("on"));x.classList.add("on");client=x.dataset.c;rerank();render();});
+function hero(){const T=D.totals,mx=T.full_fabric_if_all_confirmed.capex_gbp;
+ const r=(l,sub,t,c)=>`<div class="l">${l}<small>${sub}</small></div><div class="b"><i style="width:${Math.max(1.2,100*t.capex_gbp/mx)}%;background:${c}"></i></div><div class="v">${gbp(t.capex_gbp)}<small>${t.simple_payback_years}-yr payback · ${t.co2_saved_t_per_year} tCO₂/yr</small></div>`;
+ document.getElementById("lad").innerHTML=r("Fund everything","what a model alone recommends",T.full_fabric_if_all_confirmed,"#bdbab2")+r("After targeted surveys",T.survey_visits_needed+" visits, one question each",T.after_survey,"#777")+r("Start now","cleared by the agents",T.approved_now,"#FF3131");
+ document.getElementById("strip").innerHTML=`<div><b>${gbp(T.approved_now.capex_gbp)}</b>cleared to start now</div><div><b>${T.survey_visits_needed}</b>targeted surveys</div><div><b>${T.decisions.fix_data_first}</b>blocked: bad data</div><div><b>${T.approved_now.simple_payback_years} yrs</b>payback vs ${T.full_fabric_if_all_confirmed.simple_payback_years} unchecked</div><div style="border:0;color:#bbb">How the agents decided →</div>`;}
+hero();
 render();
 </script></body></html>"""
 out = pathlib.Path("outputs/arlington_demo.html"); out.parent.mkdir(exist_ok=True)
