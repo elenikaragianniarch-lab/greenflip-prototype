@@ -5,7 +5,7 @@ the agents' debate per building, the business case for two kinds of client, and 
 Input : data/processed/street_buildings.json (Step 10), outputs/agents.json (Step 11), data/raw/osm/area_buildings.json
 Output: outputs/arlington_demo.html  (self-contained; needs internet only for the map libraries)
 """
-import json, math, pathlib, warnings, pyproj
+import json, base64, math, pathlib, warnings, pyproj
 warnings.filterwarnings("ignore")
 S = json.loads(pathlib.Path("data/processed/street_buildings.json").read_text())
 AG = json.loads(pathlib.Path("outputs/agents.json").read_text())
@@ -91,7 +91,7 @@ details{margin-top:14px;font-size:12px;line-height:1.5;color:#333}summary{cursor
 .cols li{font-size:13px;line-height:1.45;margin:0 0 6px 16px}.pill{display:inline-block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--ink);padding:2px 7px;margin-left:8px;vertical-align:middle}
 #how .close{position:sticky;top:0;float:right;background:var(--ink);color:#fff;border:0;font:inherit;padding:9px 14px;cursor:pointer}
 #hero{position:fixed;inset:0;z-index:20;background:rgba(250,250,248,.97);display:flex;align-items:center;justify-content:center}
-#hero .in{width:min(1100px,92vw)}#hero .k{margin-bottom:10px}#hero h2{font-size:44px;line-height:1.05;letter-spacing:-.025em;max-width:900px}
+#hero .in{width:min(1380px,94vw);display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:48px;align-items:center}#hero figure{margin:0;cursor:pointer}#hero figure img{width:100%;border:1.5px solid #111;box-shadow:0 12px 40px rgba(0,0,0,.18);display:block}#hero figure figcaption{font-size:13px;margin-top:10px;color:#444}#hero figure figcaption b{color:#111}#hero h2{font-size:40px!important}#hero .k{margin-bottom:10px}#hero h2{font-size:44px;line-height:1.05;letter-spacing:-.025em;max-width:900px}
 #hero h2 span{color:var(--red)}#hero .sub{font-size:17px;color:#444;margin:14px 0 30px;max-width:760px;line-height:1.45}
 .lad{display:grid;grid-template-columns:200px 1fr 170px;gap:10px 18px;align-items:center;margin-bottom:30px}
 .lad .l{font-size:14px;font-weight:700}.lad .l small{display:block;font-weight:400;color:var(--mute);font-size:12px}
@@ -105,7 +105,7 @@ details{margin-top:14px;font-size:12px;line-height:1.5;color:#333}summary{cursor
 p.t{line-height:1.5;margin:6px 0;font-size:12.5px}.note{font-size:10.5px;color:#888;line-height:1.5;margin-top:20px}
 </style></head><body>
 <div id="map"></div>
-<div id="hero"><div class="in"><div class="k"><span style="background:#111;color:#fff;padding:3px 8px;margin-right:8px">Prototype</span>Arlington Road, Camden · public data only · built in one evening by Eleni Karagianni</div>
+<div id="hero"><div class="in"><div><div class="k"><span style="background:#111;color:#fff;padding:3px 8px;margin-right:8px">Prototype</span>Arlington Road, Camden · public data only · built in one evening by Eleni Karagianni</div>
 <h2>A £9.8m retrofit wish-list, turned into <span>£376k you can fund tomorrow</span> and a survey list of 70.</h2>
 <div class="sub">Every building becomes a heat-loss twin; three AI agents decide what is safe to fund.</div>
 <div class="proc">
@@ -116,7 +116,8 @@ p.t{line-height:1.5;margin:6px 0;font-size:12.5px}.note{font-size:10.5px;color:#
 <div><i>5</i><b>Funding plan</b><span>deck.gl 3D map</span></div></div>
 
 <div id="lad" class="lad"></div>
-<button class="go" onclick="document.getElementById('hero').remove()">Explore the street in 3D →</button> <button class="go" style="background:#fff;color:#111;border:1px solid #111;margin-left:8px" onclick="document.getElementById('hero').remove();showHow()">How it's built, and its limits</button><p style="font-size:12px;color:#777;margin-top:14px;max-width:760px">A working prototype, not a product: figures are indicative (not a SAP assessment), costs are typical unit rates, and nothing has yet been validated against surveyed homes.</p></div></div>
+<button class="go" onclick="document.getElementById('hero').remove()">Explore the street in 3D →</button> <button class="go" style="background:#fff;color:#111;border:1px solid #111;margin-left:8px" onclick="document.getElementById('hero').remove();showHow()">How it's built, and its limits</button><p style="font-size:12px;color:#777;margin-top:14px;max-width:760px">A working prototype, not a product: figures are indicative (not a SAP assessment), costs are typical unit rates, and nothing has yet been validated against surveyed homes.</p></div>
+<figure onclick="document.getElementById('hero').remove();const c=B.find(x=>x.name==='Chant House');if(c)pick(c.id)"><img src="data:image/jpeg;base64,__SHOT__" alt="Chant House twin"><figcaption><b>One building, zoomed in:</b> Chant House. Agents say start now with roof + draught-proofing (£19k → £2.0k/yr); walls wait for a survey. <b>Click to open →</b></figcaption></figure></div></div>
 <div id="how"><div class="in"><button class="close" onclick="hideHow()">Close ✕</button>
 <div class="k"><span style="background:#111;color:#fff;padding:3px 8px;margin-right:8px">Prototype</span>How it's built</div>
 <h2>Code does the maths. AI judges and explains.</h2>
@@ -331,5 +332,6 @@ hero();
 render();
 </script></body></html>"""
 out = pathlib.Path("outputs/arlington_demo.html"); out.parent.mkdir(exist_ok=True)
-out.write_text(HTML.replace("__DATA__", json.dumps(DATA, default=str, separators=(",", ":"))))
+SHOT = base64.b64encode((pathlib.Path(__file__).resolve().parent.parent / "docs" / "hero_shot.jpg").read_bytes()).decode()
+out.write_text(HTML.replace("__SHOT__", SHOT).replace("__DATA__", json.dumps(DATA, default=str, separators=(",", ":"))))
 print(f"Wrote {out} ({out.stat().st_size/1e6:.1f} MB): {len(B)} buildings, {len(panels)} wall panels")
