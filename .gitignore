@@ -1,0 +1,7 @@
+# Raw and processed EPC data stay local (licence restrictions on republishing addresses)
+data/
+*.csv
+.DS_Store
+.ipynb_checkpoints/
+__pycache__/
+.env
