@@ -104,7 +104,7 @@ HTML = r"""<!DOCTYPE html>
 <aside>
   <div class="kicker">Greenflip prototype · Arlington Road, Camden NW1</div>
   <h1>Can this street's housing data be trusted?</h1>
-  <p class="lead">Each block is a house: its footprint raised to its height. The colour is the sceptic agent's verdict
+  <p class="lead">Only the houses we checked stand up, each footprint raised to its height; the rest of the neighbourhood is drawn flat. The colour is the sceptic agent's verdict
   after reading the house's energy certificates, its 3D model and the rule-based flags. Dots are houses with no
   footprint of their own to check against.</p>
   <div class="stats">
