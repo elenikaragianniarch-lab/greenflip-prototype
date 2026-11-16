@@ -4,6 +4,10 @@
 
 Built from public data only by Eleni Karagianni, November 2026.
 
+### ▶ [Open the live demo](https://elenikaragianniarch-lab.github.io/greenflip-prototype/)
+
+*Interactive 3D street, one page, runs in the browser. Click any building to see its twin, costed measures and the agents' debate.*
+
 ![Opening screen of the demo](docs/demo_hero.jpg)
 
 ## The result in one line
