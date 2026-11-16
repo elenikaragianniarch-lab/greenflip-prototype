@@ -199,26 +199,38 @@ function section(b){const W=396,H=230,n=Math.min(7,Math.round(b.storeys)),bw=b.k
 
 // ---------- building card ----------
 function card(b){const a=b.ag,pk=a.plan.package,ok=a.ruling.approved_package,inv=client==="investor",many=b.homes>1;
-  const tag=m=>ok.includes(m.key)?'<span class="tag now">start now</span>':pk.includes(m.key)?'<span class="tag">after survey</span>':'<span class="tag no">not in plan</span>';
+  const tag=m=>`<span class="tag ${ok.includes(m.key)?"now":pk.includes(m.key)?"":"no"}" style="cursor:pointer" onclick="toDebate()">${ok.includes(m.key)?"start now":pk.includes(m.key)?"after survey":"not in plan"}</span>`;
   const hpn={ready_now:"ready now",after_fabric:"after the fabric work",not_yet:"not yet"}[a.plan.heat_pump];
   return `<span class="back" onclick="back()">← Whole street</span><div class="k">${RK[b.id]?"Priority "+RK[b.id]+" of "+Object.keys(RK).length+(inv?" for return":" for carbon per pound"):"Held back"} · ${b.kind==="house"?"house":b.homes_certified+" certified homes, about "+b.homes+" in the block"} · ${esc(b.age)}</div>
   <h1 style="margin-bottom:6px">${esc(b.name)}</h1>
-  <span class="badge" style="background:rgb(${DC[b.dec]})">${DN[b.dec]}</span><span class="badge" style="background:rgb(${VC[a.sceptic.verdict]||[150,150,150]})">${VN[a.sceptic.verdict]} · ${b.conf}</span><span class="badge" style="background:${b.overheat.band==="high"?"#8a1244":b.overheat.band==="medium"?"#d9895a":"#aaa"}">Overheating ${b.overheat.band}</span>
+  ${verdict(b)}
+  <span class="badge" style="background:rgb(${DC[b.dec]});cursor:pointer" onclick="toDebate()">${DN[b.dec]} ↓</span><span class="badge" style="background:rgb(${VC[a.sceptic.verdict]||[150,150,150]});cursor:pointer" onclick="toDebate()">${VN[a.sceptic.verdict]} · ${b.conf}</span><span class="badge" style="background:${b.overheat.band==="high"?"#8a1244":b.overheat.band==="medium"?"#d9895a":"#aaa"}">Overheating ${b.overheat.band}</span>
   <h3>The twin · where ${b.total_kw} kW leaves on a cold day</h3>${section(b)}
   <div class="big2" style="margin-top:12px"><div><b>${b.hp.now_label} → ${b.hp.after_kw??">16"} kW</b><span>heat pump ${many?"per home":""}: today → after fabric · ${hpn}</span></div>
   <div><b>${gbp(b.plan.capex)} → ${gbp(b.plan.gbp)}/yr</b><span>agents' package · ${b.plan.gbp?(b.plan.capex/b.plan.gbp).toFixed(1):"–"}-yr payback · ${b.plan.co2.toFixed(1)} tCO₂/yr</span></div></div>
   <h3>Measures, costed</h3><table><tr><th>Measure</th><th>Cost</th><th>Saves/yr</th><th>Payback</th><th></th></tr>
   ${b.measures.map(m=>`<tr><td>${m.measure}</td><td>${gbp(m.capex)}</td><td>${gbp(m.saves_gbp)}</td><td>${m.payback_yrs} yr</td><td>${tag(m)}</td></tr>`).join("")}
-  <tr><td>Heat pump${many?" ×"+b.homes:""}</td><td>${gbp(b.hp.capex-b.hp.grant)}</td><td>${b.hp.bill_change_gbp<=0?gbp(-b.hp.bill_change_gbp):"−"+gbp(b.hp.bill_change_gbp)}</td><td>${b.hp.co2_saved_t} t</td><td><span class="tag ${a.plan.heat_pump==="ready_now"?"now":""}">${hpn}</span></td></tr>
+  <tr><td>Heat pump${many?" ×"+b.homes:""}</td><td>${gbp(b.hp.capex-b.hp.grant)}</td><td>${b.hp.bill_change_gbp<=0?gbp(-b.hp.bill_change_gbp):"−"+gbp(b.hp.bill_change_gbp)}</td><td>${b.hp.co2_saved_t} tCO₂</td><td><span class="tag ${a.plan.heat_pump==="ready_now"?"now":""}">${hpn}</span></td></tr>
   <tr><td>Roof solar ${b.solar.kwp} kWp</td><td>${gbp(b.solar.capex)}</td><td>${gbp(b.solar.saves_gbp)}</td><td>${(b.solar.capex/Math.max(1,b.solar.saves_gbp)).toFixed(1)} yr</td><td></td></tr></table>
-  <p class="t" style="color:#666;font-size:11.5px">${b.hp.grant?"Heat pump cost is after the £7,500 Boiler Upgrade Scheme grant per home.":"Mostly social rent: no Boiler Upgrade Scheme grant assumed."} Heat pump row shows carbon saved, since bills stay roughly level.</p>
-  <h3>The agents' debate</h3>
+  <p class="t" style="color:#666;font-size:11.5px">Heat pump: the last column is carbon saved per year, not payback. ${b.hp.grant?"Heat pump cost is after the £7,500 Boiler Upgrade Scheme grant per home.":"Mostly social rent: no Boiler Upgrade Scheme grant assumed."} Heat pump row shows carbon saved, since bills stay roughly level.</p>
+  <h3 id="debate">The agents' debate</h3>
   <div class="say"><i>Sceptic<br><span style="font-weight:400;color:#888">audits data</span></i><div>${esc(a.sceptic.reasoning)}</div></div>
   <div class="say"><i>Strategist<br><span style="font-weight:400;color:#888">proposes</span></i><div>${esc(a.plan.why)}<br><span style="color:#666">${esc(inv?a.plan.investor_line:a.plan.council_line)}</span></div></div>
   <div class="say"><i>Challenger<br><span style="font-weight:400;color:#888">objects, rules</span></i><div><ul>${a.ruling.objections.map(o=>`<li>${esc(o)}</li>`).join("")}</ul><p style="margin-top:6px"><b>${DN[b.dec]}.</b> ${esc(a.ruling.condition)}</p></div></div>
   <h3>Overheating · ${b.overheat.score}/100 · ${esc(b.overheat.where)}</h3><p class="t">${b.overheat.drivers.map(esc).join("; ")}. <b>${esc(a.plan.overheating_action)}</b></p>
   <details><summary>Data flags (${b.flags.length}) and inputs</summary><ul style="margin:8px 0 8px 16px">${b.flags.map(f=>`<li>${esc(f)}</li>`).join("")}</ul>
   <p>EPC wording: ${esc(b.epc_words.walls)}; ${esc(b.epc_words.roof)}; ${esc(b.epc_words.windows)}; ${esc(b.epc_words.heating)}. Ratings: ${Object.entries(b.ratings).map(([k,v])=>k+"×"+v).join(", ")}.<br>Twin: ${b.storeys} storeys${b.storeys_assumed?" (assumed)":""}, footprint ${b.footprint} m², exposed wall ${b.A.walls} m², windows ≈ ${b.A.windows} m², floor area ${b.gia} m². U-values: walls ${b.U.walls}, roof ${b.U.roof}, floor ${b.U.floor}, windows ${b.U.windows}.<br><b>What would settle it:</b> ${esc(a.sceptic.what_would_settle_it)}</p></details>`;}
+
+function toDebate(){const e=document.getElementById("debate");if(e)e.scrollIntoView({behavior:"smooth",block:"start"});}
+function verdict(b){const a=b.ag,ok=a.ruling.approved_package,later=a.plan.package.filter(k=>!ok.includes(k)),M=Object.fromEntries(b.measures.map(m=>[m.key,m]));
+  const line=(keys)=>keys.map(k=>M[k]&&M[k].measure).filter(Boolean).join(" + ");
+  const sum=(keys,f)=>keys.reduce((x,k)=>x+(M[k]?M[k][f]:0),0);
+  const box=(bg,fg,label,body)=>`<div style="background:${bg};color:${fg};padding:10px 12px;margin:2px 0 6px;display:grid;grid-template-columns:96px 1fr;gap:10px;align-items:baseline"><b style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase">${label}</b><span style="font-size:14px;line-height:1.35">${body}</span></div>`;
+  let h="";
+  if(b.dec==="fix_data_first") return box("#FF3131","#fff","Fix data first",`The records don't describe this building reliably. ${esc(a.sceptic.what_would_settle_it)}`);
+  if(ok.length) h+=box("#111","#fff","Start now",`<b>${line(ok)}</b>: ${gbp(sum(ok,"capex"))} → saves ${gbp(sum(ok,"saves_gbp"))}/yr`);
+  if(later.length) h+=box("#e6e4de","#111","Survey first",`<b>${line(later)}</b>: ${gbp(sum(later,"capex"))} → ${gbp(sum(later,"saves_gbp"))}/yr, if the survey confirms it. <span style="color:#555">${esc(a.ruling.condition)}</span>`);
+  return h||box("#e6e4de","#111","No work","Nothing in the costed list is worth funding here.");}
 
 // ---------- agents tab ----------
 function agents(){const T=D.totals,prop=B.reduce((a,b)=>a+b.ag.plan.package.length,0),ok=B.reduce((a,b)=>a+b.ag.ruling.approved_package.length,0),dc={};B.forEach(b=>dc[b.dec]=(dc[b.dec]||0)+1);
