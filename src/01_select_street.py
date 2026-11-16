@@ -23,6 +23,15 @@ houses = df[on_street & df.postcode.str.startswith(SECTOR, na=False) & (df.prope
 # 2. Clean the age band label (the register mixes two spellings of the same bands)
 houses["age_band"] = houses.construction_age_band.str.replace("England and Wales: ", "", regex=False).str.replace("Pre-1900", "before 1900")
 houses["lodgement_date"] = pd.to_datetime(houses.lodgement_date)
+
+# Some certificates arrive without a UPRN (the newest one for no. 113, for example).
+# Recover them by house number when another certificate for the same number has one, and flag it.
+houses["house_no"] = houses.address1.str.extract(r"^\s*(\d+[A-Za-z]?)")[0]
+known = houses.dropna(subset=["uprn"]).groupby("house_no").uprn.agg(lambda u: u.iloc[0] if u.nunique() == 1 else None)
+houses["uprn_recovered"] = houses.uprn.isna() & houses.house_no.map(known).notna()
+houses["uprn"] = houses.uprn.fillna(houses.house_no.map(known))
+print(f"Certificates with no UPRN: {houses.uprn_recovered.sum() + houses.uprn.isna().sum()} (recovered by house number: {houses.uprn_recovered.sum()})")
+houses = houses.dropna(subset=["uprn"])
 houses = houses.sort_values(["uprn", "lodgement_date"])
 houses.to_csv("data/processed/arlington_houses_all_certs.csv", index=False)
 
@@ -42,6 +51,7 @@ def summarise(g):
         "age_bands": " | ".join(sorted(g.age_band.dropna().unique())),
         "n_age_bands": g.age_band.nunique(),
         "walls_latest": g.walls_description.iloc[-1],
+        "uprn_was_missing": bool(g.uprn_recovered.any()),
         "cert_age_years": round((pd.Timestamp("2026-11-16") - g.lodgement_date.max()).days / 365.25, 1),
     })
 
