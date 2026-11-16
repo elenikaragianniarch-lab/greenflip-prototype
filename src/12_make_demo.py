@@ -97,6 +97,7 @@ details{margin-top:14px;font-size:12px;line-height:1.5;color:#333}summary{cursor
 .lad .l{font-size:14px;font-weight:700}.lad .l small{display:block;font-weight:400;color:var(--mute);font-size:12px}
 .lad .b{height:34px;background:#e3e1da;position:relative}.lad .b i{position:absolute;inset:0 auto 0 0;display:block}
 .lad .v{font-size:24px;font-weight:700;letter-spacing:-.02em}.lad .v small{display:block;font-size:12px;font-weight:400;color:var(--mute)}
+.proc{display:grid;grid-template-columns:1fr 18px 1fr 18px 1fr 18px 1.25fr 18px 1fr;align-items:stretch;margin-bottom:26px}.proc em{align-self:center;text-align:center;font-style:normal;font-size:18px}.proc div{border:1.5px solid #111;padding:10px 12px;background:#fff}.proc div.ai{background:#111;color:#fff}.proc i{font-style:normal;font-size:11px;color:#999;display:block}.proc b{display:block;font-size:15px;margin:2px 0 4px}.proc span{font-size:12px;color:#666;line-height:1.35}.proc div.ai span{color:#bbb}
 .trio{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}.trio div{border-top:3px solid var(--ink);padding-top:8px;font-size:13.5px;line-height:1.4}
 .trio b{display:block;font-size:15px;margin-bottom:2px}#hero button.go{background:var(--ink);color:#fff;border:0;font:inherit;font-size:15px;padding:13px 22px;cursor:pointer}
 #strip{position:absolute;top:58px;left:14px;right:454px;z-index:2;display:flex;gap:0;background:#111;color:#fff;font-size:12.5px;cursor:pointer}
@@ -106,14 +107,19 @@ p.t{line-height:1.5;margin:6px 0;font-size:12.5px}.note{font-size:10.5px;color:#
 <div id="map"></div>
 <div id="hero"><div class="in"><div class="k"><span style="background:#111;color:#fff;padding:3px 8px;margin-right:8px">Prototype</span>Arlington Road, Camden · public data only · built in one evening by Eleni Karagianni</div>
 <h2>A £9.8m retrofit wish-list, turned into <span>£376k you can fund tomorrow</span> and a survey list of 70.</h2>
-<div class="sub">Every building on the street is a digital twin showing where it loses heat. Three AI agents then check the data, propose the work and argue about it, so money only goes where the evidence holds.</div>
+<div class="sub">Every building becomes a heat-loss twin; three AI agents decide what is safe to fund.</div>
+<div class="proc">
+<div><i>1</i><b>Public data</b><span>EPC · OS · OpenStreetMap</span></div><em>→</em>
+<div><i>2</i><b>3D twin</b><span>Python · shapely</span></div><em>→</em>
+<div><i>3</i><b>Physics + cost</b><span>U × A × ΔT · £ · CO₂</span></div><em>→</em>
+<div class="ai"><i>4</i><b>3 AI agents</b><span>Sceptic · Strategist · Challenger<br>Claude API</span></div><em>→</em>
+<div><i>5</i><b>Funding plan</b><span>deck.gl 3D map</span></div></div>
+
 <div id="lad" class="lad"></div>
-<div class="trio"><div><b>1 · Sceptic</b>Checks the records. 40 certificates have no address ID; 6 blocks disagree about their own walls.</div><div><b>2 · Strategist</b>Picks the fixes with the fastest payback that make a heat pump viable.</div><div><b>3 · Challenger</b>Attacks the plan and splits it into start now and survey first.</div></div>
 <button class="go" onclick="document.getElementById('hero').remove()">Explore the street in 3D →</button> <button class="go" style="background:#fff;color:#111;border:1px solid #111;margin-left:8px" onclick="document.getElementById('hero').remove();showHow()">How it's built, and its limits</button><p style="font-size:12px;color:#777;margin-top:14px;max-width:760px">A working prototype, not a product: figures are indicative (not a SAP assessment), costs are typical unit rates, and nothing has yet been validated against surveyed homes.</p></div></div>
 <div id="how"><div class="in"><button class="close" onclick="hideHow()">Close ✕</button>
 <div class="k"><span style="background:#111;color:#fff;padding:3px 8px;margin-right:8px">Prototype</span>How it's built</div>
-<h2>Twelve small, inspectable steps. Code does the maths; AI only judges and explains.</h2>
-<div class="sub">Built in one evening from public data, with Python and the Claude API, using AI-assisted coding (Claude) for much of the implementation. Every step is a script on GitHub that can be re-run. Below: the pipeline, the stack, where AI is and isn't used, and what this prototype does not prove.</div>
+<h2>Code does the maths. AI judges and explains.</h2>
 <svg viewBox="0 0 1180 470" width="100%" style="display:block;background:#f4f2ec;border:1px solid #e4e2dc" font-family="Helvetica Neue,Helvetica,Arial,sans-serif">
 <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#111"/></marker></defs>
 <g font-size="11" fill="#111">
@@ -145,11 +151,11 @@ p.t{line-height:1.5;margin:6px 0;font-size:12.5px}.note{font-size:10.5px;color:#
 <rect x="878" y="342" width="282" height="104" fill="#fff" stroke="#111"/><text x="890" y="364" font-weight="700">Confidence discounts ranking</text><text x="890" y="382">Saving × data confidence, so</text><text x="890" y="398">doubtful records can't reach</text><text x="890" y="414">the top of a funding list.</text></g>
 </g></svg>
 <div class="cols">
-<div><h4>Stack</h4><ul><li><b>Data:</b> EPC open data (MHCLG), OS Open UPRN via OS Features API, OpenStreetMap via Overpass</li><li><b>Processing:</b> Python 3, pandas, shapely, pyproj (British National Grid for metres)</li><li><b>Agents:</b> Claude Sonnet 5.5 through the Anthropic API, tool use for structured output, 6 calls in parallel, results cached to JSON</li><li><b>Front end:</b> one static HTML file, deck.gl for 3D panels, MapLibre GL basemap</li><li><b>Code:</b> 12 scripts on GitHub; data kept local (EPC address licence)</li></ul></div>
-<div><h4>Where AI is used <span class="pill">and where not</span></h4><ul><li><b>Not AI:</b> data joins, geometry, U-values, heat loss, costs, paybacks, overheating index, rule checks, every total on the page</li><li><b>AI:</b> judging which records to trust, choosing and ordering fixes, objecting to plans, writing the memo, all from evidence the code prepared</li><li><b>Why:</b> LLMs are good at weighing messy evidence and explaining it, and unreliable at arithmetic, so they never do the arithmetic</li></ul></div>
-<div><h4>What this prototype does not prove</h4><ul><li>No accuracy figure: nothing is yet compared with surveyed homes or metered bills</li><li>Not a SAP or PAS 2035 assessment; U-values are typical values for each EPC description</li><li>Window areas estimated; storeys assumed for 44 of 77 buildings</li><li>Costs are typical unit rates, not quotes</li><li>Listed-building and conservation status not checked</li><li>Agents ran once; their judgements can be wrong, which is why they are shown in full</li></ul></div></div>
-<h4 style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;border-top:2px solid #111;padding-top:8px;margin:28px 0 8px">With Greenflip's data, the next steps would be</h4>
-<p style="font-size:14px;line-height:1.55;max-width:900px">1. Validate the heat-loss model and each data check against your surveyed homes, and keep only the checks that reduce error. 2. Replace estimated window areas and storeys with OS NGD heights, floors and imagery. 3. Feed the agents your own cost and outcome data so their rulings are calibrated, not just reasoned.</p>
+<div><h4>Tech stack</h4><ul><li>Python · pandas · shapely · pyproj</li><li>OS Features API · Overpass · EPC bulk data</li><li>Claude Sonnet 5.5 · tool use · cached JSON</li><li>deck.gl · MapLibre · one HTML file</li><li>12 scripts on GitHub</li></ul></div>
+<div><h4>AI vs code</h4><ul><li><b>Code:</b> geometry, heat loss, costs, checks, every total</li><li><b>AI:</b> trust the data? which fixes? what could go wrong?</li><li>Built with AI-assisted coding (Claude)</li></ul></div>
+<div><h4>Honest limits</h4><ul><li>Not validated against surveyed homes</li><li>Not a SAP assessment; costs are typical rates</li><li>Storeys assumed for 44 of 77 buildings</li><li>Listed status not checked</li></ul></div></div>
+<h4 style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;border-top:2px solid #111;padding-top:8px;margin:28px 0 8px">Next, with Greenflip's data</h4>
+<p style="font-size:14px;line-height:1.55">Validate on surveyed homes → add OS NGD heights and floors → calibrate the agents on real costs.</p>
 </div></div>
 <div id="strip" onclick="go('agents')"></div>
 <div class="modes" id="modes"></div><div id="scale"></div>
