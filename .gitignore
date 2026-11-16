@@ -5,3 +5,6 @@ data/
 .ipynb_checkpoints/
 __pycache__/
 .env
+
+# API keys stay on this Mac only
+secrets/
