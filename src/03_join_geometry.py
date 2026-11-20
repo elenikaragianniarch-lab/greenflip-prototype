@@ -24,7 +24,7 @@ OSM = pathlib.Path("data/raw/osm/area_buildings.json")
 if not OSM.exists():
     q = '[out:json][timeout:60];(way["building"](51.5330,-0.1475,51.5415,-0.1385););out body geom;'
     r = requests.post("https://overpass-api.de/api/interpreter", data={"data": q},
-                      headers={"User-Agent": "greenflip-prototype/0.1 (portfolio research)"}, timeout=120)
+                      headers={"User-Agent": "arlington-road-twin/0.1 (portfolio research)"}, timeout=120)
     r.raise_for_status(); OSM.parent.mkdir(parents=True, exist_ok=True); OSM.write_text(r.text)
 
 to_metres = pyproj.Transformer.from_crs(4326, 27700, always_xy=True).transform  # lat/lon -> British National Grid (metres)

@@ -4,7 +4,7 @@
 
 Built from public data only by Eleni Karagianni, November 2026.
 
-### ▶ [Open the live demo](https://elenikaragianniarch-lab.github.io/greenflip-prototype/)
+### ▶ [Open the live demo](https://elenikaragianniarch-lab.github.io/arlington-road-twin/)
 
 *Interactive 3D street, one page, runs in the browser. Click any building to see its twin, costed measures and the agents' debate.*
 
